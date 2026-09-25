@@ -12,5 +12,6 @@ export const styles = [
   {
     id: "anime",
     name: "Anime",
+    prompt: "Repaint this image as a stylized anime artwork with vibrant colors and distinctive character designs.",
   },
 ];
