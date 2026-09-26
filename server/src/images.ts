@@ -19,7 +19,7 @@ export async function prepareImage(input: Buffer) {
     throw new InvalidImageError("Unsupported image format");
   }
 
-  const data = await sharp(input, { limitInputPixels: 50_000_000 })
+  const data = await sharp(input, { limitInputPixels: 25_000_000 })
     .rotate()
     .resize(MAX_SIDE, MAX_SIDE, { fit: "inside", withoutEnlargement: true })
     .jpeg({ quality: 90 })

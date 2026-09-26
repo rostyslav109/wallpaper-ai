@@ -13,6 +13,10 @@ const envSchema = z.object({
     OPENROUTER_IMAGE_MODEL: z.string().default("google/gemini-3.1-flash-image"),
     GEMINI_IMAGE_MODEL: z.string().default("gemini-3.1-flash-image-preview"),
     GOOGLE_CLIENT_ID: z.string().min(1),
+    R2_ACCOUNT_ID: z.string().min(1).optional(),
+    R2_ACCESS_KEY_ID: z.string().min(1).optional(),
+    R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
+    R2_BUCKET: z.string().min(1).optional(),
 });
 
 export const env = envSchema.parse(process.env);

@@ -1,0 +1,12 @@
+{
+  "name": "wallpaper-ai",
+  "private": true,
+  "description": "Upload a photo and restyle it with AI (oil painting, watercolor, anime...)",
+  "scripts": {
+    "build": "npm ci --include=dev --prefix client && npm run build --prefix client && npm ci --include=dev --prefix server && npm run build --prefix server",
+    "start": "npm start --prefix server"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { prisma } from "../db";
 import { requireAuth } from "../middleware/requireAuth";
 import { styles } from "../styles";
-import { getFilePath } from "../storage";
+import { contentTypeForKey, readStoredFile } from "../storage";
 
 export const generationsRouter = Router();
 
@@ -49,5 +49,6 @@ generationsRouter.get("/:id/:kind", async (req, res) => {
     return;
   }
 
-  res.sendFile(getFilePath(key));
+  const data = await readStoredFile(key);
+  res.type(contentTypeForKey(key)).send(data);
 });
