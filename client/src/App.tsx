@@ -103,7 +103,7 @@ function App() {
     <div>
       <h1>Wallpaper AI</h1>
       <p>
-        {user.email} · Credits: {user.credits}{" "}
+        {user.email} · Free: {user.freeGenerations} · Credits: {user.credits}{" "}
         <button onClick={handleLogout}>Log out</button>
       </p>
       <input
@@ -124,12 +124,12 @@ function App() {
       </select>
       <button
         onClick={handleGenerate}
-        disabled={!file || loading || user.credits === 0}
+        disabled={!file || loading || (user.credits === 0 && user.freeGenerations === 0)}
       >
         {loading ? "Generating..." : "Generate"}
       </button>
 
-      {user.credits === 0 && <p>You're out of credits.</p>}
+      {user.credits === 0 && user.freeGenerations === 0 && <p>You're out of credits.</p>}
 
       {error && <p style={{ color: "red" }}>{error}</p>}
 

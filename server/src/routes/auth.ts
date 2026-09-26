@@ -5,10 +5,20 @@ import jwt from "jsonwebtoken";
 import { requireAuth } from "../middleware/requireAuth";
 import { env } from "../config";
 import { loginSchema, registerSchema } from "../schemas";
+import { authLimiter } from "../middleware/rateLimits";
 
 export const authRouter = Router();
 
-authRouter.post("/register", async (req, res) => {
+function publicUser(user: { id: string; email: string; credits: number; freeGenerations: number }) {
+    return {
+        id: user.id,
+        email: user.email,
+        credits: user.credits,
+        freeGenerations: user.freeGenerations,
+    };
+}
+
+authRouter.post("/register", authLimiter, async (req, res) => {
 
     const parsed = registerSchema.safeParse(req.body);
     if (!parsed.success) {
@@ -31,15 +41,11 @@ authRouter.post("/register", async (req, res) => {
         data: { email: email, passwordHash },
     });
 
-    res.status(201).json({
-        id: user.id,
-        email: user.email,
-        credits: user.credits,
-    });
+    res.status(201).json(publicUser(user));
 
 });
 
-authRouter.post("/login", async (req,res) => {
+authRouter.post("/login", authLimiter, async (req,res) => {
     const parsed = loginSchema.safeParse(req.body);
     if (!parsed.success) {
         res.status(400).json({ error: parsed.error.issues[0]?.message });
@@ -67,7 +73,7 @@ authRouter.post("/login", async (req,res) => {
         maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res.json({id: user.id, email: user.email, credits: user.credits});
+    res.json(publicUser(user));
 });
 
 authRouter.get("/me", requireAuth, async (req, res) => {
@@ -78,7 +84,7 @@ authRouter.get("/me", requireAuth, async (req, res) => {
     return;
   }
 
-  res.json({ id: user.id, email: user.email, credits: user.credits });
+  res.json(publicUser(user));
 });
 
 authRouter.post("/logout", (req, res) => {
