@@ -7,6 +7,7 @@ import { StylePicker } from "./StylePicker";
 import { BeforeAfter } from "./BeforeAfter";
 import { Gallery } from "./Gallery";
 import { Notice, type NoticeVariant } from "./Notice";
+import { PricingModal } from "./PricingModal";
 
 type Props = {
   user: User;
@@ -31,6 +32,7 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
   const [error, setError] = useState<string | null>(null);
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [notice, setNotice] = useState<NoticeVariant | null>(showWelcome ? "welcome" : null);
+  const [pricingOpen, setPricingOpen] = useState(false);
 
   useEffect(() => {
     api.styles().then((list) => {
@@ -38,6 +40,25 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
       setStyleId(list[0]?.id ?? "");
     });
     loadGenerations();
+  }, []);
+
+  // Повернулися зі сторінки оплати (?checkout=success).
+  // Кредити додає вебхук, який може прийти на кілька секунд пізніше, тому кілька разів перепитуємо сервер.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("checkout") !== "success") return;
+
+    window.history.replaceState(null, "", window.location.pathname);
+    setNotice("paid");
+
+    let attempts = 0;
+    const timer = setInterval(() => {
+      attempts += 1;
+      api.me().then(onUserChange).catch(() => {});
+      if (attempts >= 5) clearInterval(timer);
+    }, 2000);
+
+    return () => clearInterval(timer);
   }, []);
 
   function loadGenerations() {
@@ -92,7 +113,7 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
 
   return (
     <div className="studio">
-      <Header user={user} onLogout={onLogout} />
+      <Header user={user} onLogout={onLogout} onGetCredits={() => setPricingOpen(true)} />
 
       <main className="studio-main">
         <aside className="panel">
@@ -154,9 +175,14 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
         <Notice
           variant={notice}
           onClose={() => setNotice(null)}
-          onGetCredits={() => setNotice("soon")}
+          onGetCredits={() => {
+            setNotice(null);
+            setPricingOpen(true);
+          }}
         />
       )}
+
+      {pricingOpen && <PricingModal onClose={() => setPricingOpen(false)} />}
     </div>
   );
 }

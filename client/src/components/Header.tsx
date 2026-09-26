@@ -3,9 +3,10 @@ import type { User } from "../types";
 type Props = {
   user: User;
   onLogout: () => void;
+  onGetCredits: () => void;
 };
 
-export function Header({ user, onLogout }: Props) {
+export function Header({ user, onLogout, onGetCredits }: Props) {
   return (
     <header className="header">
       <div className="brand">
@@ -17,9 +18,12 @@ export function Header({ user, onLogout }: Props) {
         <span className="pill" title="Free previews left">
           Free · {user.freeGenerations}
         </span>
-        <span className="pill pill-premium" title="Premium credits">
+        <button className="pill pill-premium pill-button" title="Buy credits" onClick={onGetCredits}>
           Credits · {user.credits}
-        </span>
+        </button>
+        <button className="btn btn-secondary btn-small" onClick={onGetCredits}>
+          Get credits
+        </button>
         <span className="header-email">{user.email}</span>
         <button className="btn btn-ghost" onClick={onLogout}>
           Log out

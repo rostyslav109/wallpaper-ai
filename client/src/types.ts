@@ -22,3 +22,12 @@ export type Generation = {
   originalUrl: string;
   resultUrl: string | null;
 };
+
+export type Pack = {
+  id: string;
+  name: string;
+  credits: number;
+  price: string;
+  highlight: boolean;
+  available: boolean;
+};

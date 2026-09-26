@@ -5,6 +5,7 @@ import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/auth";
 import { generateRouter } from "./routes/generate";
 import { generationsRouter } from "./routes/generations";
+import { billingRouter, polarWebhookHandler } from "./routes/billing";
 import { env } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
 
@@ -17,6 +18,9 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
+// Вебхук оплати — до express.json(): йому потрібне сире тіло для перевірки підпису
+app.post("/api/webhooks/polar", express.raw({ type: "application/json" }), polarWebhookHandler);
+
 app.use(express.json());
 app.use(cookieParser());
 
@@ -27,6 +31,7 @@ app.get("/api/health", (req, res) => {
 app.use("/api/auth", authRouter);
 app.use("/api", generateRouter);
 app.use("/api/generations", generationsRouter);
+app.use("/api/billing", billingRouter);
 
 app.use("/api", (req, res) => {
   res.status(404).json({ error: "Not found" });

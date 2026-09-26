@@ -18,6 +18,7 @@ model User {
   freeGenerations Int      @default(2)
   createdAt    DateTime @default(now())
   generations Generation[]
+  payments    Payment[]
 }
 
 enum GenerationStatus {
@@ -41,6 +42,20 @@ model Generation {
   status      GenerationStatus @default(PENDING)
   createdAt   DateTime         @default(now())
   tier        GenerationTier   @default(PREMIUM)
+
+  @@index([userId, createdAt])
+}
+model Payment {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider        String
+  providerOrderId String   @unique
+  packId          String
+  credits         Int
+  amount          Int
+  currency        String
+  createdAt       DateTime @default(now())
 
   @@index([userId, createdAt])
 }

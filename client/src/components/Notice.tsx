@@ -1,4 +1,4 @@
-export type NoticeVariant = "welcome" | "upsell" | "soon";
+export type NoticeVariant = "welcome" | "upsell" | "paid";
 
 type Props = {
   variant: NoticeVariant;
@@ -15,9 +15,9 @@ const CONTENT = {
     title: "Like it? This is just the preview.",
     text: "Premium credits give you sharper details, richer brushstrokes, full resolution — and no watermark.",
   },
-  soon: {
-    title: "Credits are coming soon ✨",
-    text: "Payments aren't live yet. Stay tuned!",
+  paid: {
+    title: "Thank you! 🎉",
+    text: "Your payment went through. Credits appear in your balance within a few seconds.",
   },
 };
 

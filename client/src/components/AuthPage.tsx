@@ -120,6 +120,10 @@ export function AuthPage({ onAuth }: Props) {
             {isRegister ? "Log in" : "Create an account"}
           </button>
         </p>
+
+        <p className="legal-links">
+          <a href="/terms.html">Terms</a> · <a href="/privacy.html">Privacy</a> · <a href="/refund.html">Refunds</a>
+        </p>
       </form>
     </div>
   );

@@ -17,6 +17,13 @@ const envSchema = z.object({
     R2_ACCESS_KEY_ID: z.string().min(1).optional(),
     R2_SECRET_ACCESS_KEY: z.string().min(1).optional(),
     R2_BUCKET: z.string().min(1).optional(),
+    APP_URL: z.string().url().default("http://localhost:5173"),
+    POLAR_SERVER: z.enum(["sandbox", "production"]).default("sandbox"),
+    POLAR_ACCESS_TOKEN: z.string().min(1).optional(),
+    POLAR_WEBHOOK_SECRET: z.string().min(1).optional(),
+    POLAR_PRODUCT_STARTER: z.string().min(1).optional(),
+    POLAR_PRODUCT_POPULAR: z.string().min(1).optional(),
+    POLAR_PRODUCT_PRO: z.string().min(1).optional(),
 });
 
 export const env = envSchema.parse(process.env);

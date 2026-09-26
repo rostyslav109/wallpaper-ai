@@ -1,4 +1,4 @@
-import type { Generation, Style, Tier, User } from "./types";
+import type { Generation, Pack, Style, Tier, User } from "./types";
 
 // Помилка від нашого бекенду: статус + текст + необов'язковий код (напр. "NO_CREDITS")
 export class ApiError extends Error {
@@ -42,6 +42,9 @@ export const api = {
 
   styles: () => request<Style[]>("/api/styles"),
   generations: () => request<Generation[]>("/api/generations"),
+
+  packs: () => request<Pack[]>("/api/billing/packs"),
+  checkout: (packId: string) => postJson<{ url: string }>("/api/billing/checkout", { packId }),
 
   async generate(file: File, styleId: string) {
     const form = new FormData();

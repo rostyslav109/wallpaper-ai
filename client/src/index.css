@@ -214,6 +214,10 @@ input {
   color: var(--premium);
 }
 
+.pill-button {
+  cursor: pointer;
+}
+
 .badge {
   padding: 4px 10px;
   border-radius: 999px;
@@ -699,6 +703,7 @@ input {
   padding: 24px;
   background: rgba(0, 0, 0, 0.75);
   backdrop-filter: blur(6px);
+  overflow-y: auto;
   animation: fade-in 0.15s ease-out;
 }
 
@@ -808,9 +813,130 @@ input {
 }
 
 /* =========================================================
+   Pricing
+   ========================================================= */
+.btn-small {
+  height: 34px;
+  padding: 0 14px;
+  font-size: 13px;
+}
+
+.pricing {
+  position: relative;
+  display: grid;
+  gap: 20px;
+  width: 100%;
+  max-width: 820px;
+  padding: 32px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.pricing-head {
+  display: grid;
+  gap: 6px;
+  padding: 0 28px;
+  text-align: center;
+}
+
+.pricing-head h2 {
+  font-size: 24px;
+  letter-spacing: -0.02em;
+}
+
+.pricing-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.pack {
+  position: relative;
+  display: grid;
+  gap: 8px;
+  padding: 22px 18px 18px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  text-align: center;
+}
+
+.pack.is-highlight {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.pack-badge {
+  position: absolute;
+  top: -11px;
+  left: 50%;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.pack h3 {
+  font-size: 16px;
+}
+
+.pack-credits {
+  color: var(--premium);
+  font-weight: 600;
+}
+
+.pack-price {
+  margin-bottom: 6px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.pricing-foot {
+  font-size: 13px;
+  text-align: center;
+}
+
+.pricing-foot a,
+.legal-links a {
+  color: var(--muted);
+}
+
+.pricing-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+}
+
+.legal-links {
+  color: var(--muted);
+  font-size: 12px;
+  text-align: center;
+}
+
+/* =========================================================
    Responsive
    ========================================================= */
 @media (max-width: 900px) {
+  .pricing-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pricing {
+    padding: 24px 18px;
+  }
+
   .studio-main {
     grid-template-columns: 1fr;
     padding: 16px;
@@ -835,6 +961,10 @@ input {
 
 @media (max-width: 480px) {
   .header .brand-name {
+    display: none;
+  }
+
+  .header .btn-small {
     display: none;
   }
 

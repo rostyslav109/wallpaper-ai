@@ -11,46 +11,7 @@ export const styles: Style[] = [
     name: "Oil Painting",
     description: "Thick brushstrokes and rich, textured paint — like a classic gallery canvas.",
     prompt: `
-    IMPORTANT: Keep the main subject recognizable and faithful to the original photograph.
-    Preserve its exact proportions, silhouette, perspective, pose, structure, colors,
-    materials, important details and distinctive characteristics.
-
-    Do not redesign, replace, distort or invent the main subject.
-
-    Transform the uploaded image into a sophisticated, highly detailed traditional oil painting
-    on textured canvas.
-
-    Use a rich impasto painting technique with clearly visible, thick layers of paint and
-    natural brushstrokes. The surface should have authentic canvas texture and subtle
-    variations in paint thickness. Avoid the appearance of a digital oil filter.
-
-    Create the feeling of a hand-painted European fine-art painting, combining realistic
-    proportions with slightly artistic simplification. Forms should be detailed and believable,
-    but every surface should visibly consist of layered oil paint.
-
-    Use harmonious, slightly muted colors with natural tonal transitions, soft atmospheric
-    perspective and cinematic lighting.
-
-    The original subject must remain the visual focal point.
-
-    Integrate the subject naturally into the painted environment rather than simply applying
-    a texture over the photograph. Reflections, shadows, highlights and surrounding objects
-    should all be painted consistently with the new artistic medium.
-
-    Add subtle imperfections characteristic of a real traditional painting: irregular brushwork,
-    layered pigment, small variations in texture and slightly imperfect edges.
-
-    Premium museum-quality traditional oil painting, authentic impasto, heavily textured canvas,
-    visible brushstrokes, realistic painterly detail, elegant composition, timeless vintage
-    fine-art aesthetic, atmospheric depth, natural lighting, handcrafted appearance.
-
-    Do not make it look like a photograph with an oil filter.
-    Make it look like the entire scene was originally painted by hand.
-
-    Visual direction:
-    Vintage European fine-art painting with a sophisticated, atmospheric aesthetic.
-    Rich impasto, thick expressive brushstrokes, tactile canvas texture, muted natural colors,
-    soft cinematic lighting and elegant painterly composition.
+    Transform the user-uploaded image into an impasto oil painting in the style of image_0.png. The output must preserve the original scene's composition, objects, lighting, and core details, but render them using extremely heavy, thick, and physically deep textured paint layers. Employ a distinct, textured brush and palette knife technique throughout. Every surface (water, vehicles, people, background, details) must show tactile depth with individual paint strokes visible, catching the light and creating a sculpted paint texture. The colors should be rich, deep, and vibrant, mirroring the intensity of image_0.png. Avoid any photorealistic rendering; all elements must be clearly built from tangible paint. Use dynamic, bold application of paint with non-blended, heavy strokes. Emphasize the tactile quality of the paint medium itself as the primary stylistic feature. The overall texture should be complex, intricate, and deeply dimensional, as if the painting is a physical object. The background elements (e.g., the sky, distant objects, fine details) should be rendered with the same level of texture and detail as the foreground. The painting should feel cohesive and hand-rendered. Maintain a consistent, high-end, gallery-quality art piece feel.
     `,
     },
     {
