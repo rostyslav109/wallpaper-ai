@@ -15,4 +15,24 @@ model User {
   passwordHash String
   credits      Int      @default(3)
   createdAt    DateTime @default(now())
+  generations Generation[]
+}
+
+enum GenerationStatus {
+  PENDING
+  DONE
+  FAILED
+}
+
+model Generation {
+  id          String           @id @default(cuid())
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  styleId     String
+  originalKey String
+  resultKey   String?
+  status      GenerationStatus @default(PENDING)
+  createdAt   DateTime         @default(now())
+
+  @@index([userId, createdAt])
 }
