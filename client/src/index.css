@@ -1,111 +1,863 @@
+/* =========================================================
+   Design tokens — усі кольори й розміри в одному місці
+   ========================================================= */
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
+  --bg: #0d0d10;
+  --surface: #16161b;
+  --surface-2: #1e1e24;
+  --border: #2a2a32;
+  --border-hover: #3a3a44;
+  --text: #ececf1;
+  --muted: #9b9ba7;
+  --accent: #8ab4f8;
+  --accent-hover: #a8c7fa;
+  --on-accent: #0b1a33;
+  --premium: #f3c26b;
+  --danger: #f28b82;
 
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
+  --radius: 16px;
+  --radius-lg: 24px;
+  --shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
+  color-scheme: dark;
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
   color: var(--text);
   background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
-}
-
-#root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
+/* =========================================================
+   Base
+   ========================================================= */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  min-height: 100dvh;
+  -webkit-font-smoothing: antialiased;
 }
 
 h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
-}
-
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
+h2,
+h3,
 p {
   margin: 0;
 }
 
-code,
-.counter {
-  font-family: var(--mono);
-  display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+img {
+  display: block;
+  max-width: 100%;
 }
 
-code {
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+/* =========================================================
+   Buttons
+   ========================================================= */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 20px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s, opacity 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn-secondary {
+  background: var(--surface-2);
+  border-color: var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--border-hover);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--muted);
+}
+
+.btn-ghost:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* =========================================================
+   Forms
+   ========================================================= */
+.field {
+  display: grid;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.field input {
+  height: 46px;
+  padding: 0 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.03);
   font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.field input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.2);
+}
+
+.form-error {
+  color: var(--danger);
+  font-size: 14px;
+}
+
+/* =========================================================
+   Brand, spinner, badges, pills
+   ========================================================= */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+  background: conic-gradient(from 200deg, #8ab4f8, #c58af9, #f3c26b, #8ab4f8);
+}
+
+.splash {
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+}
+
+.spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.pill {
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-2);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.pill-premium {
+  border-color: rgba(243, 194, 107, 0.35);
+  color: var(--premium);
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.badge-free {
+  background: var(--surface-2);
+  color: var(--muted);
+}
+
+.badge-premium {
+  background: rgba(243, 194, 107, 0.15);
+  color: var(--premium);
+}
+
+/* =========================================================
+   Auth page — фото зі скошеною лінією + картка по центру
+   ========================================================= */
+.auth-page {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 100dvh;
+  padding: 24px 16px;
+  overflow: hidden;
+}
+
+.hero {
+  position: fixed;
+  inset: 0;
+}
+
+.hero-image {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+}
+
+/* Якщо фото ще немає в client/public — показується градієнт */
+.hero-original {
+  background-image: url("/hero-original.jpg"), linear-gradient(135deg, #1b2a3d, #0d0d10 70%);
+}
+
+.hero-styled {
+  background-image: url("/hero-styled.jpg"), linear-gradient(135deg, #4a2c14, #120b06 70%);
+  clip-path: polygon(62% 0, 100% 0, 100% 100%, 38% 100%);
+}
+
+.hero-divider {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.85);
+  clip-path: polygon(61.85% 0, 62.15% 0, 38.15% 100%, 37.85% 100%);
+}
+
+.hero-shade {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse at center,
+    rgba(13, 13, 16, 0.6) 0%,
+    rgba(13, 13, 16, 0.25) 60%,
+    rgba(13, 13, 16, 0.55) 100%
+  );
+}
+
+.hero-label,
+.compare-label {
+  position: absolute;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  pointer-events: none;
+}
+
+.hero-label-left {
+  top: 24px;
+  left: 24px;
+}
+
+.hero-label-right {
+  right: 24px;
+  bottom: 24px;
+}
+
+.auth-card {
+  position: relative;
+  display: grid;
+  gap: 18px;
+  width: 100%;
+  max-width: 400px;
+  padding: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-lg);
+  background: rgba(18, 18, 23, 0.78);
+  backdrop-filter: blur(20px);
+  box-shadow: var(--shadow);
+}
+
+.auth-heading {
+  display: grid;
+  gap: 6px;
+}
+
+.auth-heading h1 {
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.auth-switch {
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* =========================================================
+   Studio layout
+   ========================================================= */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(13, 13, 16, 0.8);
+  backdrop-filter: blur(12px);
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.header-email {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.studio-main {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.panel {
+  display: grid;
+  align-content: start;
+  gap: 28px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.panel-section {
+  display: grid;
+  gap: 12px;
+}
+
+.panel-title {
+  color: var(--muted);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.panel-footer {
+  display: grid;
+  gap: 10px;
+}
+
+.tier-hint {
+  color: var(--muted);
+  font-size: 13px;
+  text-align: center;
+}
+
+.tier-hint.is-premium {
+  color: var(--premium);
+}
+
+/* =========================================================
+   Upload zone
+   ========================================================= */
+.upload {
+  display: grid;
+  place-items: center;
+  min-height: 180px;
+  overflow: hidden;
+  border: 1.5px dashed var(--border);
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.upload:hover,
+.upload.is-dragging {
+  border-color: var(--accent);
+  background: rgba(138, 180, 248, 0.06);
+}
+
+.upload-empty {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  padding: 24px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.upload-empty svg {
+  margin-bottom: 4px;
+  color: var(--accent);
+}
+
+.upload-preview {
+  width: 100%;
+  max-height: 220px;
+  object-fit: cover;
+}
+
+/* =========================================================
+   Style picker
+   ========================================================= */
+.style-picker {
+  display: grid;
+  gap: 12px;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: transparent;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.chip:hover {
+  border-color: var(--border-hover);
+  background: var(--surface-2);
+}
+
+.chip.is-active {
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+
+.style-description {
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* =========================================================
+   Canvas (right side)
+   ========================================================= */
+.canvas {
+  display: grid;
+  place-items: center;
+  min-height: 560px;
+  padding: 24px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+}
+
+.canvas-image {
+  max-height: 70vh;
+  border-radius: var(--radius);
+}
+
+.canvas-message {
+  display: grid;
+  justify-items: center;
+  gap: 10px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.canvas-message strong {
+  color: var(--text);
+  font-size: 18px;
+}
+
+.result {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-width: 900px;
+}
+
+.result-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.result-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* =========================================================
+   Before / after slider
+   ========================================================= */
+.compare {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  user-select: none;
+}
+
+.compare-image {
+  width: 100%;
+}
+
+.compare-before {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  object-fit: cover;
+}
+
+.compare-handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: #fff;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
+  transform: translateX(-1px);
+  pointer-events: none;
+}
+
+.compare-handle::after {
+  content: "↔";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #fff;
+  color: #111;
+  font-size: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  transform: translate(-50%, -50%);
+}
+
+.compare-label {
+  top: 12px;
+}
+
+.compare-label-left {
+  left: 12px;
+}
+
+.compare-label-right {
+  right: 12px;
+}
+
+/* Невидимий повзунок на всю картинку — ним і керуємо слайдером */
+.compare-range {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  opacity: 0;
+  cursor: ew-resize;
+}
+
+/* =========================================================
+   Gallery
+   ========================================================= */
+.gallery {
+  display: grid;
+  gap: 36px;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 8px 24px 48px;
+}
+
+.section-head {
+  display: flex;
+  flex-wrap: wrap;
+  row-gap: 4px;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.section-head h2 {
+  font-size: 20px;
+  letter-spacing: -0.01em;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.tile {
+  position: relative;
+  aspect-ratio: 4 / 3;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+}
+
+.tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s;
+}
+
+.tile:hover img {
+  transform: scale(1.04);
+}
+
+.tile-caption {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(6px);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/* =========================================================
+   Lightbox
+   ========================================================= */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  animation: fade-in 0.15s ease-out;
+}
+
+.lightbox {
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-width: 1000px;
+}
+
+.lightbox-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.lightbox-actions {
+  display: flex;
+  gap: 8px;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* =========================================================
+   Notice (small popup)
+   ========================================================= */
+.notice {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 40;
+  display: grid;
+  gap: 10px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  background: var(--surface-2);
+  box-shadow: var(--shadow);
+  animation: slide-up 0.25s ease-out;
+}
+
+.notice h3 {
+  font-size: 16px;
+}
+
+.notice p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.notice-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.notice .btn {
+  height: 38px;
+  padding: 0 16px;
+}
+
+@keyframes slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* =========================================================
+   Google sign-in
+   ========================================================= */
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.divider::before,
+.divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.google-button {
+  display: flex;
+  justify-content: center;
+  min-height: 44px;
+}
+
+/* Наша сторінка темна (color-scheme: dark), а iframe Google — світлий.
+   Коли схеми різні, браузер заливає iframe білим фоном. Вирівнюємо схему. */
+.google-button iframe {
+  color-scheme: light;
+}
+
+/* =========================================================
+   Responsive
+   ========================================================= */
+@media (max-width: 900px) {
+  .studio-main {
+    grid-template-columns: 1fr;
+    padding: 16px;
+  }
+
+  .canvas {
+    min-height: 360px;
+  }
+
+  .header {
+    padding: 12px 16px;
+  }
+
+  .header-email {
+    display: none;
+  }
+
+  .gallery {
+    padding: 8px 16px 40px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header .brand-name {
+    display: none;
+  }
+
+  .header-right {
+    gap: 6px;
+  }
+
+  .header .btn {
+    height: 34px;
+    padding: 0 10px;
+  }
+
+  .pill {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .auth-card {
+    padding: 24px;
+  }
+
+  .notice {
+    right: 16px;
+    bottom: 16px;
+  }
 }

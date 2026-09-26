@@ -19,6 +19,7 @@
     "dotenv": "^18.0.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.7.0",
+    "google-auth-library": "^11.1.0",
     "jsonwebtoken": "^9.0.3",
     "multer": "^2.4.0",
     "pg": "^8.23.0",

@@ -21,6 +21,7 @@ generateRouter.get("/styles", (req, res) => {
     const publicStyles = styles.map((style) => ({
         id: style.id,
         name: style.name,
+        description: style.description,
     }));
     res.json(publicStyles);
 });
@@ -107,6 +108,7 @@ generateRouter.post("/generate", requireAuth, generateLimiter, upload.single("im
             data: { status: "DONE", resultKey },
         });
 
+        res.setHeader("X-Generation-Tier", tier);
         res.type(result.mimetype).send(result.data);
     } catch (error){
         console.error(error);

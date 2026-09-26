@@ -19,6 +19,7 @@ generationsRouter.get("/", async (req, res) => {
     id: g.id,
     styleName: styles.find((s) => s.id === g.styleId)?.name ?? g.styleId,
     status: g.status,
+    tier: g.tier,
     createdAt: g.createdAt,
     originalUrl: `/api/generations/${g.id}/original`,
     resultUrl: g.resultKey ? `/api/generations/${g.id}/result` : null,

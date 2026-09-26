@@ -14,3 +14,7 @@ export const loginSchema = z.object({
     email,
     password: z.string().min(1, "Password is required").max(72),
 })
+
+export const googleSchema = z.object({
+  credential: z.string().min(1),
+});
