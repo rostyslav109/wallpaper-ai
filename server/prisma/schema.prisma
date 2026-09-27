@@ -42,6 +42,11 @@ model Generation {
   status      GenerationStatus @default(PENDING)
   createdAt   DateTime         @default(now())
   tier        GenerationTier   @default(PREMIUM)
+  steps       Json?
+  prompt      String?
+  analysis    Json?
+  reviews     Json?
+  step        String?
 
   @@index([userId, createdAt])
 }

@@ -46,6 +46,7 @@ export const api = {
   packs: () => request<Pack[]>("/api/billing/packs"),
   checkout: (packId: string) => postJson<{ url: string }>("/api/billing/checkout", { packId }),
 
+  // Запускає генерацію. Сервер відповідає одразу id, а саму картинку малює у фоні.
   async generate(file: File, styleId: string) {
     const form = new FormData();
     form.append("image", file);
@@ -53,9 +54,8 @@ export const api = {
 
     const res = await fetch("/api/generate", { method: "POST", body: form });
     if (!res.ok) throw await toApiError(res);
-
-    const blob = await res.blob();
-    const tier = (res.headers.get("X-Generation-Tier") ?? "FREE") as Tier;
-    return { url: URL.createObjectURL(blob), tier };
+    return (await res.json()) as { id: string; tier: Tier };
   },
+
+  generation: (id: string) => request<Generation>(`/api/generations/${id}`),
 };

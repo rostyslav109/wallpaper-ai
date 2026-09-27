@@ -54,3 +54,12 @@ export async function addWatermark(input: Buffer) {
 
   return { data, mimetype: "image/jpeg" };
 }
+
+// Зменшена копія для vision-моделі: їй не потрібні 2048px, а менше пікселів = дешевше й швидше
+export async function toThumbnail(input: Buffer, maxSide = 1024) {
+  const data = await sharp(input)
+    .resize(maxSide, maxSide, { fit: "inside", withoutEnlargement: true })
+    .jpeg({ quality: 85 })
+    .toBuffer();
+  return { data, mimetype: "image/jpeg" };
+}

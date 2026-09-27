@@ -17,7 +17,9 @@ export type Generation = {
   id: string;
   styleName: string;
   status: "PENDING" | "DONE" | "FAILED";
+  step: string | null;
   tier: Tier;
+  scores: number[];
   createdAt: string;
   originalUrl: string;
   resultUrl: string | null;

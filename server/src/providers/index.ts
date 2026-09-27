@@ -4,6 +4,7 @@ import { createMockProvider } from "./mock";
 import { createCloudflareProvider } from "./cloudflare";
 import { createGeminiProvider } from "./gemini";
 import { createOpenRouterProvider } from "./openrouter";
+import { createOpenRouterVision, type VisionProvider } from "./vision";
 
 export const freeProvider: ImageProvider =
   env.CLOUDFLARE_ACCOUNT_ID && env.CLOUDFLARE_API_TOKEN
@@ -17,4 +18,12 @@ export const premiumProvider: ImageProvider = env.OPENROUTER_API_KEY
     ? createGeminiProvider(env.GEMINI_API_KEY, env.GEMINI_IMAGE_MODEL)
     : createMockProvider("premium");
 
-console.log(`[providers] free=${freeProvider.name}, premium=${premiumProvider.name}`);
+// Vision-модель для преміум-workflow (аналіз, план, оцінка). Без OpenRouter — workflow вимкнений.
+export const visionProvider: VisionProvider | null =
+  env.OPENROUTER_API_KEY && env.PREMIUM_WORKFLOW === "on"
+    ? createOpenRouterVision(env.OPENROUTER_API_KEY, env.OPENROUTER_VISION_MODEL)
+    : null;
+
+console.log(
+  `[providers] free=${freeProvider.name}, premium=${premiumProvider.name}, vision=${visionProvider?.name ?? "off"}`
+);

@@ -8,12 +8,30 @@ import { BeforeAfter } from "./BeforeAfter";
 import { Gallery } from "./Gallery";
 import { Notice, type NoticeVariant } from "./Notice";
 import { PricingModal } from "./PricingModal";
+import { ProgressSteps } from "./ProgressSteps";
 
 type Props = {
   user: User;
   onUserChange: (user: User | null) => void;
   onLogout: () => void;
   showWelcome: boolean;
+};
+
+// Опитує статус генерації, поки вона не завершиться (максимум ~3 хвилини)
+async function waitForGeneration(id: string, onUpdate: (generation: Generation) => void) {
+  for (let i = 0; i < 120; i++) {
+    await new Promise((resolve) => setTimeout(resolve, 1500));
+    const generation = await api.generation(id);
+    onUpdate(generation);
+    if (generation.status !== "PENDING") return generation;
+  }
+  throw new ApiError(504, "Still working — the result will appear in your gallery soon.");
+}
+
+type Progress = {
+  tier: Tier;
+  step: string | null;
+  scores: number[];
 };
 
 type Result = {
@@ -33,6 +51,7 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
   const [generations, setGenerations] = useState<Generation[]>([]);
   const [notice, setNotice] = useState<NoticeVariant | null>(showWelcome ? "welcome" : null);
   const [pricingOpen, setPricingOpen] = useState(false);
+  const [progress, setProgress] = useState<Progress | null>(null);
 
   useEffect(() => {
     api.styles().then((list) => {
@@ -81,11 +100,22 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
     setResult(null);
 
     try {
-      const { url, tier } = await api.generate(file, styleId);
-      const styleName = styles.find((s) => s.id === styleId)?.name ?? "";
-      setResult({ url, tier, styleName });
+      const { id, tier } = await api.generate(file, styleId);
+      setProgress({ tier, step: "queued", scores: [] });
+      api.me().then(onUserChange).catch(() => {}); // кредит уже зарезервовано — оновлюємо лічильник
 
-      if (tier === "FREE") setNotice("upsell");
+      const finished = await waitForGeneration(id, (g) =>
+        setProgress({ tier, step: g.step, scores: g.scores })
+      );
+
+      if (finished.status === "DONE" && finished.resultUrl) {
+        const styleName = styles.find((s) => s.id === styleId)?.name ?? "";
+        setResult({ url: finished.resultUrl, tier, styleName });
+        if (tier === "FREE") setNotice("upsell");
+      } else {
+        setError("Generation failed — your credit has been returned.");
+      }
+
       loadGenerations();
     } catch (err) {
       if (err instanceof ApiError && err.status === 401) {
@@ -95,6 +125,7 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
       setError(err instanceof ApiError ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
+      setProgress(null);
       // Оновлюємо лічильники кредитів з сервера
       api.me().then(onUserChange).catch(() => {});
     }
@@ -139,9 +170,16 @@ export function Studio({ user, onUserChange, onLogout, showWelcome }: Props) {
         <section className="canvas">
           {loading ? (
             <div className="canvas-message">
-              <span className="spinner" />
-              <strong>Painting your image…</strong>
-              <span>This can take up to 30 seconds.</span>
+              {progress ? (
+                <ProgressSteps tier={progress.tier} step={progress.step} scores={progress.scores} />
+              ) : (
+                <span className="spinner" />
+              )}
+              <span>
+                {progress?.tier === "PREMIUM"
+                  ? "Premium generations take up to a minute. You can leave — the result will wait in your gallery."
+                  : "This usually takes 10–20 seconds."}
+              </span>
             </div>
           ) : result && previewUrl ? (
             <div className="result">

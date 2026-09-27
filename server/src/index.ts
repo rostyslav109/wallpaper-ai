@@ -8,6 +8,7 @@ import { generationsRouter } from "./routes/generations";
 import { billingRouter, polarWebhookHandler } from "./routes/billing";
 import { env } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
+import { recoverStuckGenerations } from "./workflow/process";
 
 const app = express();
 const PORT = env.PORT;
@@ -43,6 +44,8 @@ if (isProduction) {
 }
 
 app.use(errorHandler);
+
+recoverStuckGenerations().catch((error) => console.error("[recovery] failed", error));
 
 app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);

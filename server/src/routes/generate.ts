@@ -5,10 +5,10 @@ import { freeProvider, premiumProvider } from "../providers";
 import { reserveGeneration, refundGeneration } from "../billing";
 import { prisma } from "../db";
 import { requireAuth } from "../middleware/requireAuth";
-import { saveFile, IMAGE_EXTENSIONS } from "../storage";
-import { prepareImage, InvalidImageError, addWatermark } from "../images";
+import { saveFile } from "../storage";
+import { prepareImage, InvalidImageError } from "../images";
 import { generateLimiter } from "../middleware/rateLimits";
-
+import { processGeneration } from "../workflow/process";
 
 export const generateRouter = Router();
 
@@ -84,44 +84,29 @@ generateRouter.post("/generate", requireAuth, generateLimiter, upload.single("im
     const provider = tier === "PREMIUM" ? premiumProvider : freeProvider;
     console.log(`[generate] user=${userId} tier=${tier} provider=${provider.name} style=${style.id}`);
 
-    let generationId: string | null = null;
-
+    // Зберігаємо оригінал і створюємо запис. Якщо тут щось впало — повертаємо кредит.
+    let generationId: string;
     try {
         const originalKey = await saveFile(prepared.data, prepared.ext);
-
         const generation = await prisma.generation.create({
-            data: { userId, styleId: style.id, originalKey, tier },
+            data: { userId, styleId: style.id, originalKey, tier, step: "queued" },
         });
         generationId = generation.id;
-
-        let result = await provider.restyle(prepared.data, prepared.mimetype, style.prompt);
-
-        if (tier === "FREE") {
-            result = await addWatermark(result.data);
-        }
-
-        const resultExt = IMAGE_EXTENSIONS[result.mimetype] ?? "png";
-        const resultKey = await saveFile(result.data, resultExt);
-
-        await prisma.generation.update({
-            where: { id: generation.id },
-            data: { status: "DONE", resultKey },
-        });
-
-        res.setHeader("X-Generation-Tier", tier);
-        res.type(result.mimetype).send(result.data);
-    } catch (error){
-        console.error(error);
-
-        if (generationId) {
-            await prisma.generation.update({
-                where: { id: generationId },
-                data: { status: "FAILED" },
-            });
-        }
-
+    } catch (error) {
         await refundGeneration(userId, tier);
-
-        res.status(500).json({ error: "Generation failed" });
+        throw error;
     }
+
+    // Відповідаємо одразу — генерація йде у фоні, клієнт опитує GET /api/generations/:id
+    res.status(202).json({ id: generationId, tier });
+
+    void processGeneration({
+        generationId,
+        userId,
+        tier,
+        provider,
+        image: prepared.data,
+        mimetype: prepared.mimetype,
+        style,
+    });
 });
