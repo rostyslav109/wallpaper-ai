@@ -18,7 +18,8 @@
 - **8 artistic styles** with short descriptions — Oil Painting, Watercolor, Impressionism, Pencil Sketch, Anime, Pixel Art, Neon Cyberpunk, Low Poly
 - **Before / after slider** to compare the original and the result
 - **Freemium model** — 2 free previews (smaller, watermarked, free AI model), then premium credits (full resolution, best model)
-- **Credit packs** with checkout, webhooks and idempotent crediting (Polar)
+- **Credit packs** with checkout, signed webhooks and idempotent crediting (Creem, Merchant of Record)
+- **Prompt moderation**: every prompt passes the Creem Moderation API before it reaches an image model (fail closed)
 - **Accounts** — email + password or **Sign in with Google**
 - **Personal gallery** split into Premium and Free previews
 - Responsive dark UI, works on mobile
@@ -34,7 +35,7 @@
 | AI | Cloudflare Workers AI (FLUX.2 klein) — free tier · OpenRouter (Gemini 3.1 Flash Image) — premium |
 | Images | sharp (validation, resizing, EXIF stripping, watermark) |
 | Storage | Cloudflare R2 (S3-compatible) · local folder in development |
-| Payments | Polar (Merchant of Record), Standard Webhooks |
+| Payments | Creem (Merchant of Record), HMAC-SHA256 signed webhooks, Moderation API |
 | Infra | Railway (app), Neon (Postgres), Docker Compose (local DB) |
 
 ## Architecture
@@ -46,7 +47,7 @@ flowchart LR
     S --> R2[(Cloudflare R2<br/>images)]
     S -->|free tier| CF[Cloudflare Workers AI]
     S -->|premium tier| OR[OpenRouter]
-    U -->|checkout| P[Polar]
+    U -->|checkout| P[Creem]
     P -->|signed webhook| S
     U -->|Google sign-in| G[Google]
 ```
@@ -59,15 +60,15 @@ In production a single Express service serves both the API and the built React a
 2. `requireAuth` checks the JWT cookie; a per-user rate limit applies.
 3. **sharp** opens the file to prove it is a real JPEG/PNG/WebP, rejects "pixel bombs", fixes rotation, strips EXIF (incl. GPS) and resizes to ≤ 2048 px.
 4. **Billing** atomically reserves one unit: a premium credit if the user has one, otherwise a free preview (with a global daily cap for the free tier).
-5. The matching **provider** restyles the image. The prompt comes from the server — users only choose a style, they can't send arbitrary prompts.
+5. The matching **provider** restyles the image. The prompt comes from the server — users only choose a style, they can't send arbitrary prompts. Providers are wrapped in a moderation decorator, so every prompt is checked by the Creem Moderation API first; anything other than `allow` (or a moderation outage) blocks the generation and refunds the credit.
 6. Free results are downscaled and watermarked. Original and result are saved to storage, and the generation is recorded.
 7. If anything fails, the generation is marked `FAILED` and the credit is refunded.
 
 ### Payments
 
-1. `POST /api/billing/checkout` creates a Polar checkout session for a credit pack and returns its URL.
-2. After payment Polar sends an `order.paid` webhook.
-3. The server verifies the signature on the raw body, matches the product to a pack and, in one transaction, records the payment and adds credits.
+1. `POST /api/billing/checkout` creates a Creem checkout session for a credit pack (user id in `metadata`) and returns its URL.
+2. After payment Creem sends a `checkout.completed` webhook.
+3. The server verifies the `creem-signature` header (HMAC-SHA256 of the raw body, constant-time comparison), matches the product to a pack and, in one transaction, records the payment and adds credits.
 4. `providerOrderId` is unique, so a repeated webhook never credits twice.
 
 ## Project structure
@@ -91,7 +92,7 @@ wallpaper-ai/
 │       ├── billing.ts         credit reservation and refunds
 │       ├── images.ts          validation, resizing, watermark (sharp)
 │       ├── storage.ts         local folder or Cloudflare R2
-│       ├── polar.ts / packs.ts  checkout, webhook verification, credit packs
+│       ├── creem.ts / packs.ts  checkout, webhook verification, prompt moderation, credit packs
 │       └── styles.ts          styles and their prompts
 ├── docker-compose.yml         local PostgreSQL
 └── package.json               build / start scripts for deployment
@@ -122,7 +123,7 @@ cp .env.example .env
 npm run dev                 # http://localhost:5173
 ```
 
-Everything else is optional: without AI keys both tiers use a **mock provider**, without R2 files go to `server/storage`, and without Polar keys the pricing shows "Coming soon".
+Everything else is optional: without AI keys both tiers use a **mock provider**, without R2 files go to `server/storage`, and without Creem keys the pricing shows "Coming soon" and moderation is skipped.
 
 ### Environment variables
 
@@ -136,7 +137,7 @@ See [`server/.env.example`](server/.env.example) and [`client/.env.example`](cli
 | `CLOUDFLARE_ACCOUNT_ID`, `CLOUDFLARE_API_TOKEN` | no | Free-tier AI |
 | `OPENROUTER_API_KEY` | no | Premium-tier AI |
 | `R2_*` | no | Image storage in Cloudflare R2 |
-| `POLAR_*`, `APP_URL` | no | Payments |
+| `CREEM_*`, `APP_URL` | no | Payments and prompt moderation |
 
 ## Deployment
 

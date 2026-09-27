@@ -5,7 +5,7 @@ import cookieParser from "cookie-parser";
 import { authRouter } from "./routes/auth";
 import { generateRouter } from "./routes/generate";
 import { generationsRouter } from "./routes/generations";
-import { billingRouter, polarWebhookHandler } from "./routes/billing";
+import { billingRouter, creemWebhookHandler } from "./routes/billing";
 import { env } from "./config";
 import { errorHandler } from "./middleware/errorHandler";
 import { recoverStuckGenerations } from "./workflow/process";
@@ -20,7 +20,7 @@ if (isProduction) {
 }
 
 // Вебхук оплати — до express.json(): йому потрібне сире тіло для перевірки підпису
-app.post("/api/webhooks/polar", express.raw({ type: "application/json" }), polarWebhookHandler);
+app.post("/api/webhooks/creem", express.raw({ type: "application/json" }), creemWebhookHandler);
 
 app.use(express.json());
 app.use(cookieParser());

@@ -27,7 +27,6 @@
     "multer": "^2.4.0",
     "pg": "^8.23.0",
     "sharp": "^0.35.4",
-    "standardwebhooks": "^1.1.1",
     "zod": "^4.6.5"
   },
   "devDependencies": {

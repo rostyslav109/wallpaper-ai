@@ -3,11 +3,11 @@ import { z } from "zod";
 import { prisma } from "../db";
 import { requireAuth } from "../middleware/requireAuth";
 import { findPackByProductId, packs } from "../packs";
-import { createCheckout, isPolarConfigured, verifyWebhook } from "../polar";
+import { createCheckout, isCreemConfigured, verifyWebhook } from "../creem";
 
 export const billingRouter = Router();
 
-// Список пакетів для сторінки цін (id продуктів Polar назовні не віддаємо)
+// Список пакетів для сторінки цін (id продуктів Creem назовні не віддаємо)
 billingRouter.get("/packs", (req, res) => {
   res.json(
     packs.map((pack) => ({
@@ -16,7 +16,7 @@ billingRouter.get("/packs", (req, res) => {
       credits: pack.credits,
       price: pack.price,
       highlight: pack.highlight,
-      available: isPolarConfigured && Boolean(pack.productId),
+      available: isCreemConfigured && Boolean(pack.productId),
     }))
   );
 });
@@ -32,7 +32,7 @@ billingRouter.post("/checkout", requireAuth, async (req, res) => {
     return;
   }
 
-  if (!isPolarConfigured || !pack.productId) {
+  if (!isCreemConfigured || !pack.productId) {
     res.status(503).json({ error: "Payments are not available yet" });
     return;
   }
@@ -53,30 +53,40 @@ billingRouter.post("/checkout", requireAuth, async (req, res) => {
   res.json({ url });
 });
 
-// Вебхук від Polar. Підключається в index.ts ДО express.json(),
-// бо для перевірки підпису потрібне сире тіло запиту (req.body — Buffer).
-export async function polarWebhookHandler(req: Request, res: Response) {
+// Вебхук від Creem. Підключається в index.ts ДО express.json(),
+// бо підпис рахується від сирого тіла запиту (req.body — Buffer).
+// Creem повторює доставку до 5 разів, поки не отримає 200, тому обробка ідемпотентна.
+export async function creemWebhookHandler(req: Request, res: Response) {
   let event;
   try {
-    event = verifyWebhook(req.body as Buffer, req.headers);
+    event = verifyWebhook(req.body as Buffer, req.header("creem-signature"));
   } catch {
     res.status(403).json({ error: "Invalid signature" });
     return;
   }
 
-  // Нас цікавить лише оплачене замовлення; на решту подій просто відповідаємо «прийнято»
-  if (event.type !== "order.paid") {
-    res.status(202).end();
+  if (event.eventType === "refund.created") {
+    // Повернення коштів робиш вручну в панелі Creem; тут лише лог, щоб помітити й забрати кредити
+    console.warn("[creem] refund created", event.object.id);
+    res.status(200).end();
     return;
   }
 
-  const order = event.data;
-  const pack = order.product_id ? findPackByProductId(order.product_id) : undefined;
-  const userId = order.customer?.external_id ?? order.metadata?.user_id;
+  // Кредити нараховуємо лише за завершену оплату; на решту подій відповідаємо «прийнято»
+  if (event.eventType !== "checkout.completed") {
+    res.status(200).end();
+    return;
+  }
+
+  const checkout = event.object;
+  const orderId = checkout.order?.id ?? checkout.id;
+  const productId = checkout.product?.id ?? checkout.order?.product;
+  const pack = productId ? findPackByProductId(productId) : undefined;
+  const userId = checkout.metadata?.user_id;
 
   if (!pack || typeof userId !== "string") {
-    console.error("[polar] cannot match order", order.id, order.product_id, userId);
-    res.status(202).end(); // 2xx, щоб Polar не повторював запит, який ми все одно не обробимо
+    console.error("[creem] cannot match checkout", checkout.id, productId, userId);
+    res.status(200).end(); // 200, щоб Creem не повторював запит, який ми все одно не обробимо
     return;
   }
 
@@ -86,12 +96,12 @@ export async function polarWebhookHandler(req: Request, res: Response) {
       prisma.payment.create({
         data: {
           userId,
-          provider: "polar",
-          providerOrderId: order.id,
+          provider: "creem",
+          providerOrderId: orderId,
           packId: pack.id,
           credits: pack.credits,
-          amount: order.total_amount ?? 0,
-          currency: order.currency ?? "eur",
+          amount: checkout.order?.amount ?? 0,
+          currency: (checkout.order?.currency ?? "eur").toLowerCase(),
         },
       }),
       prisma.user.update({
@@ -99,15 +109,15 @@ export async function polarWebhookHandler(req: Request, res: Response) {
         data: { credits: { increment: pack.credits } },
       }),
     ]);
-    console.log(`[polar] +${pack.credits} credits for user ${userId} (order ${order.id})`);
+    console.log(`[creem] +${pack.credits} credits for user ${userId} (order ${orderId})`);
   } catch (error) {
-    // P2002 = порушення унікальності providerOrderId: це замовлення вже оброблене раніше
+    // P2002 = порушення унікальності providerOrderId: це замовлення вже оброблене (повторна доставка)
     if (typeof error === "object" && error !== null && "code" in error && error.code === "P2002") {
-      res.status(202).end();
+      res.status(200).end();
       return;
     }
     throw error;
   }
 
-  res.status(202).end();
+  res.status(200).end();
 }

@@ -6,7 +6,7 @@ type Props = {
   onClose: () => void;
 };
 
-// Вікно з пакетами кредитів. Кнопка «Buy» веде на сторінку оплати Polar.
+// Вікно з пакетами кредитів. Кнопка «Buy» веде на сторінку оплати Creem.
 export function PricingModal({ onClose }: Props) {
   const [packs, setPacks] = useState<Pack[]>([]);
   const [buyingId, setBuyingId] = useState<string | null>(null);
@@ -65,7 +65,7 @@ export function PricingModal({ onClose }: Props) {
         {error && <p className="form-error">{error}</p>}
 
         <p className="pricing-foot muted">
-          Secure checkout by Polar · One-time payment, no subscription ·{" "}
+          Secure checkout by Creem · One-time payment, no subscription ·{" "}
           <a href="/refund.html" target="_blank" rel="noreferrer">Refund policy</a>
         </p>
 
