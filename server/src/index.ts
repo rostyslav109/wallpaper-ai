@@ -19,6 +19,20 @@ if (isProduction) {
   app.set("trust proxy", 1);
 }
 
+// Один «канонічний» домен: відвідувачів старої адреси (*.up.railway.app) перекидаємо на APP_URL,
+// щоб у всіх були ті самі cookie, Google-вхід і посилання. Лише сторінки (GET не на /api):
+// вебхуки й API працюють на будь-якому домені, тож нічого не зламається, поки адреси оновлюються.
+const canonicalHost = new URL(env.APP_URL).host;
+if (isProduction) {
+  app.use((req, res, next) => {
+    if (req.method === "GET" && !req.path.startsWith("/api") && req.headers.host !== canonicalHost) {
+      res.redirect(301, `${env.APP_URL}${req.originalUrl}`);
+      return;
+    }
+    next();
+  });
+}
+
 // Вебхук оплати — до express.json(): йому потрібне сире тіло для перевірки підпису
 app.post("/api/webhooks/creem", express.raw({ type: "application/json" }), creemWebhookHandler);
 

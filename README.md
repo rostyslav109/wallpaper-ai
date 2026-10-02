@@ -2,7 +2,7 @@
 
 **Turn any photo into a work of art.** Upload a picture, pick a style — oil painting, watercolor, anime, pixel art and more — and get an AI-restyled version in seconds.
 
-**Live demo:** https://wallpaper-ai-art.up.railway.app
+**Live demo:** https://wallpaperai.app
 *(payments run in test mode — use card `4242 4242 4242 4242`, any future date, any CVC)*
 
 <p align="center">
