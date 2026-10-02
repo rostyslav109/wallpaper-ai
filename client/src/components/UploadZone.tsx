@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { shrinkImage } from "../lib/shrinkImage";
 
 type Props = {
   previewUrl: string | null;
@@ -8,6 +9,15 @@ type Props = {
 // Поле для завантаження фото: клік або перетягування файлу
 export function UploadZone({ previewUrl, onFile }: Props) {
   const [dragging, setDragging] = useState(false);
+
+  // Великі фото стискаємо в браузері; якщо щось пішло не так — віддаємо оригінал
+  const handleFile = async (file: File) => {
+    try {
+      onFile(await shrinkImage(file));
+    } catch {
+      onFile(file);
+    }
+  };
 
   return (
     <label
@@ -21,7 +31,7 @@ export function UploadZone({ previewUrl, onFile }: Props) {
         e.preventDefault();
         setDragging(false);
         const file = e.dataTransfer.files[0];
-        if (file) onFile(file);
+        if (file) void handleFile(file);
       }}
     >
       <input
@@ -30,7 +40,7 @@ export function UploadZone({ previewUrl, onFile }: Props) {
         hidden
         onChange={(e) => {
           const file = e.target.files?.[0];
-          if (file) onFile(file);
+          if (file) void handleFile(file);
           e.target.value = ""; // щоб можна було обрати той самий файл ще раз
         }}
       />
@@ -45,7 +55,7 @@ export function UploadZone({ previewUrl, onFile }: Props) {
             <path d="M4 20h16" />
           </svg>
           <strong>Drop a photo here</strong>
-          <span className="muted">or click to browse · JPG, PNG, WebP up to 10 MB</span>
+          <span className="muted">or click to browse · JPG, PNG or WebP · large photos are resized automatically</span>
         </div>
       )}
     </label>

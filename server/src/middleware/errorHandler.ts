@@ -4,7 +4,7 @@ import multer from "multer";
 export const errorHandler: ErrorRequestHandler = (err, req, res, next) => {
   if (err instanceof multer.MulterError) {
     const message =
-      err.code === "LIMIT_FILE_SIZE" ? "File is too large (max 10 MB)" : "Invalid upload";
+      err.code === "LIMIT_FILE_SIZE" ? "File is too large (max 20 MB)" : "Invalid upload";
     res.status(400).json({ error: message });
     return;
   }
