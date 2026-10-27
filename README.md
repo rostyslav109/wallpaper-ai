@@ -36,7 +36,7 @@
 | Images | sharp (validation, resizing, EXIF stripping, watermark) |
 | Storage | Cloudflare R2 (S3-compatible) · local folder in development |
 | Payments | Creem (Merchant of Record), HMAC-SHA256 signed webhooks, Moderation API |
-| Infra | Railway (app), Neon (Postgres), Docker Compose (local DB) |
+| Infra | Render (app), Neon (Postgres), Cloudflare R2 (images), Docker Compose (local DB) |
 
 ## Architecture
 
@@ -141,12 +141,12 @@ See [`server/.env.example`](server/.env.example) and [`client/.env.example`](cli
 
 ## Deployment
 
-The app runs on **Railway** as one service built from the repo root:
+The app runs on **Render** (free web service, defined in [`render.yaml`](render.yaml)) as one service built from the repo root:
 
 - `npm run build` — builds the React app and generates the Prisma client
 - `npm start` — applies migrations (`prisma migrate deploy`) and starts the server
 
-Database on **Neon**, images on **Cloudflare R2**. Set `NODE_ENV=production` and the variables above in Railway.
+Database on **Neon**, images on **Cloudflare R2**. Set `NODE_ENV=production` and the variables above in the Render dashboard.
 
 ## Security notes
 

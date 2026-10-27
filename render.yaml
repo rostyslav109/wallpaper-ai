@@ -1,0 +1,57 @@
+# Render Blueprint: one free web service that serves both the API and the built React client.
+# Database (Neon) and image storage (Cloudflare R2) live outside Render.
+services:
+  - type: web
+    name: wallpaper-ai
+    runtime: node
+    plan: free
+    region: frankfurt
+    branch: main
+    buildCommand: npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: APP_URL
+        value: https://wallpaperai.app
+      # Secrets: values are entered in the Render dashboard, never committed
+      - key: JWT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: VITE_GOOGLE_CLIENT_ID
+        sync: false
+      - key: OPENROUTER_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CLOUDFLARE_ACCOUNT_ID
+        sync: false
+      - key: CLOUDFLARE_API_TOKEN
+        sync: false
+      - key: R2_ACCOUNT_ID
+        sync: false
+      - key: R2_ACCESS_KEY_ID
+        sync: false
+      - key: R2_SECRET_ACCESS_KEY
+        sync: false
+      - key: R2_BUCKET
+        sync: false
+      - key: CREEM_MODE
+        sync: false
+      - key: CREEM_API_KEY
+        sync: false
+      - key: CREEM_WEBHOOK_SECRET
+        sync: false
+      - key: CREEM_PRODUCT_STARTER
+        sync: false
+      - key: CREEM_PRODUCT_POPULAR
+        sync: false
+      - key: CREEM_PRODUCT_PRO
+        sync: false
