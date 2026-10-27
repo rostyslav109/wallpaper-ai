@@ -30,4 +30,10 @@ const envSchema = z.object({
     CREEM_PRODUCT_PRO: z.string().min(1).optional(),
 });
 
-export const env = envSchema.parse(process.env);
+// Hosting dashboards (e.g. Render) pass variables left blank as empty strings.
+// Treat them as "not set" so optional integrations stay disabled instead of crashing on startup.
+const definedEnv = Object.fromEntries(
+    Object.entries(process.env).filter(([, value]) => value !== undefined && value.trim() !== ""),
+);
+
+export const env = envSchema.parse(definedEnv);
